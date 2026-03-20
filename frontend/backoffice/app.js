@@ -64,6 +64,13 @@ async function doLogin(email, password) {
       errorEl.textContent = data.error || 'Login failed';
       return;
     }
+    // QR activate에서 리다이렉트된 경우 원래 URL로 복귀
+    const params = new URLSearchParams(window.location.search);
+    const returnUrl = params.get('return');
+    if (returnUrl) {
+      window.location.href = returnUrl;
+      return;
+    }
     showDashboard(data.user.email);
   } catch {
     errorEl.textContent = 'Network error';
