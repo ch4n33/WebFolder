@@ -45,6 +45,9 @@ app.get('/healthz', async (_req, res) => {
   }
 });
 
+// Root redirect
+app.get('/', (_req, res) => res.redirect('/upload'));
+
 // API routes
 app.use('/api', apiRoutes);
 
