@@ -10,9 +10,9 @@ spec:
   tls:
     - secretName: webfolder-tls
       hosts:
-        - wf.ch4n33.dev
+        - wf.rche.moe
   rules:
-    - host: wf.ch4n33.dev
+    - host: wf.rche.moe
       http:
         paths:
           - path: /
