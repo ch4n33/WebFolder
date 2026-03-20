@@ -2,10 +2,20 @@ import jwt from 'jsonwebtoken';
 import config from '../config/index.js';
 import userRepository from '../repositories/user.repository.js';
 import { hashPassword, comparePassword } from '../utils/crypto.js';
-import { ConflictError, UnauthorizedError } from '../utils/errors.js';
+import { AppError, ConflictError, UnauthorizedError } from '../utils/errors.js';
+import pool from '../db/connection.js';
 
 const authService = {
   async register(email, password) {
+    // 화이트리스트 확인
+    const { rows } = await pool.query(
+      'SELECT 1 FROM email_whitelist WHERE email = $1',
+      [email]
+    );
+    if (rows.length === 0) {
+      throw new AppError('Registration is restricted to approved emails only', 403);
+    }
+
     const existing = await userRepository.findByEmail(email);
     if (existing) {
       throw new ConflictError('Email already registered');
