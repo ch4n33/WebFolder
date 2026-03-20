@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebFolder - Upload</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">WebFolder</h1>
+
+    <!-- Auth Section -->
+    <div id="auth-section" class="section">
+      <div class="auth-tabs">
+        <button class="tab active" data-tab="qr">QR Scan</button>
+        <button class="tab" data-tab="otp">OTP Code</button>
+      </div>
+
+      <!-- QR Tab -->
+      <div id="qr-tab" class="tab-content active">
+        <p class="hint">Scan this QR code with your phone</p>
+        <div id="qr-container" class="qr-container">
+          <canvas id="qr-canvas"></canvas>
+        </div>
+        <p class="status" id="qr-status">Waiting for activation...</p>
+      </div>
+
+      <!-- OTP Tab -->
+      <div id="otp-tab" class="tab-content">
+        <p class="hint">Enter the 6-digit code from your phone</p>
+        <div class="otp-input-group">
+          <input type="text" id="otp-input" class="otp-input" maxlength="6"
+                 inputmode="numeric" pattern="[0-9]*" placeholder="000000" autocomplete="off">
+          <button id="otp-submit" class="btn btn-primary">Verify</button>
+        </div>
+        <p class="status" id="otp-status"></p>
+      </div>
+    </div>
+
+    <!-- Upload Section (hidden until authenticated) -->
+    <div id="upload-section" class="section hidden">
+      <div class="timer-bar">
+        <div id="timer-fill" class="timer-fill"></div>
+      </div>
+      <p class="timer-text">Session expires in <span id="timer-text">--:--</span></p>
+
+      <div id="drop-zone" class="drop-zone">
+        <div class="drop-zone-content">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          <p>Drop files here or tap to browse</p>
+        </div>
+        <input type="file" id="file-input" multiple accept="image/*,video/*,audio/*" hidden>
+      </div>
+
+      <div id="file-list" class="file-list"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

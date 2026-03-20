@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebFolder - Backoffice</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">WebFolder</h1>
+    <p class="subtitle">Backoffice</p>
+
+    <!-- Auth Section -->
+    <div id="auth-section" class="section">
+      <div id="login-form" class="form">
+        <input type="email" id="email" placeholder="Email" autocomplete="email">
+        <input type="password" id="password" placeholder="Password" autocomplete="current-password">
+        <button id="login-btn" class="btn btn-primary">Login</button>
+        <p class="toggle">Don't have an account? <a href="#" id="show-register">Register</a></p>
+        <p id="auth-error" class="error"></p>
+      </div>
+
+      <div id="register-form" class="form hidden">
+        <input type="email" id="reg-email" placeholder="Email" autocomplete="email">
+        <input type="password" id="reg-password" placeholder="Password (min 8 chars)" autocomplete="new-password">
+        <button id="register-btn" class="btn btn-primary">Register</button>
+        <p class="toggle">Already have an account? <a href="#" id="show-login">Login</a></p>
+        <p id="reg-error" class="error"></p>
+      </div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div id="dashboard-section" class="section hidden">
+      <div class="user-info">
+        <span id="user-email"></span>
+        <button id="logout-btn" class="btn btn-small">Logout</button>
+      </div>
+
+      <div class="otp-section">
+        <h2>Generate OTP</h2>
+        <p class="hint">Generate a one-time code to authenticate on a shared PC</p>
+        <button id="otp-btn" class="btn btn-primary btn-large">Generate Code</button>
+        <div id="otp-display" class="otp-display hidden">
+          <span id="otp-code" class="otp-code"></span>
+          <p id="otp-timer" class="otp-timer"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

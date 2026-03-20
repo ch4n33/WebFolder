@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webfolder
+  namespace: kloud-apps
+  labels:
+    app: webfolder
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webfolder
+  template:
+    metadata:
+      labels:
+        app: webfolder
+    spec:
+      containers:
+        - name: webfolder
+          image: ghcr.io/ch4n33/webfolder:latest
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - secretRef:
+                name: webfolder-secret
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      securityContext:
+        runAsUser: 1001
+        runAsNonRoot: true

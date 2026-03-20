@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: webfolder
+  namespace: kloud-apps
+  labels:
+    app: webfolder
+spec:
+  type: ClusterIP
+  selector:
+    app: webfolder
+  ports:
+    - port: 80
+      targetPort: 3000

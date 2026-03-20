@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: webfolder
+  namespace: kloud-apps
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: traefik
+  tls:
+    - secretName: webfolder-tls
+      hosts:
+        - wf.ch4n33.dev
+  rules:
+    - host: wf.ch4n33.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: webfolder
+                port:
+                  number: 80
