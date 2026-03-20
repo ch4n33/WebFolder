@@ -11,6 +11,17 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
+// Health check (before any redirects for k8s probes)
+app.get('/healthz', async (_req, res) => {
+  try {
+    const { default: pool } = await import('./db/connection.js');
+    await pool.query('SELECT 1');
+    res.json({ status: 'ok' });
+  } catch {
+    res.status(503).json({ status: 'error' });
+  }
+});
+
 // HTTPS redirect in production
 if (process.env.NODE_ENV === 'production') {
   app.use((req, res, next) => {
@@ -43,17 +54,6 @@ const uploadLimiter = rateLimit({
   message: { error: 'Upload rate limit exceeded' },
 });
 app.use('/api/upload', uploadLimiter);
-
-// Health check
-app.get('/healthz', async (_req, res) => {
-  try {
-    const { default: pool } = await import('./db/connection.js');
-    await pool.query('SELECT 1');
-    res.json({ status: 'ok' });
-  } catch {
-    res.status(503).json({ status: 'error' });
-  }
-});
 
 // Root redirect
 app.get('/', (_req, res) => res.redirect('/upload'));
