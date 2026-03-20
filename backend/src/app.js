@@ -11,6 +11,16 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
+// HTTPS redirect in production
+if (process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    if (req.headers['x-forwarded-proto'] !== 'https') {
+      return res.redirect(301, `https://${req.headers.host}${req.url}`);
+    }
+    next();
+  });
+}
+
 // Middleware
 app.use(cors({
   origin: true,
