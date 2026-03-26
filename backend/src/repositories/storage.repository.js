@@ -3,12 +3,13 @@ import s3Client from '../config/s3.js';
 import config from '../config/index.js';
 
 const storageRepository = {
-  async upload(key, buffer, contentType) {
+  async upload(key, body, contentType, contentLength) {
     const command = new PutObjectCommand({
       Bucket: config.s3.bucket,
       Key: key,
-      Body: buffer,
+      Body: body,
       ContentType: contentType,
+      ...(contentLength && { ContentLength: contentLength }),
     });
     await s3Client.send(command);
     return key;

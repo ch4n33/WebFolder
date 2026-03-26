@@ -1,10 +1,11 @@
 import { Router } from 'express';
+import os from 'os';
 import multer from 'multer';
 import { authorizeSession } from '../middleware/authorizeSession.js';
 import uploadService from '../services/upload.service.js';
 
 const upload = multer({
-  storage: multer.memoryStorage(),
+  dest: os.tmpdir(),
   limits: { fileSize: 500 * 1024 * 1024 }, // 500MB
 });
 
