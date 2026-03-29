@@ -82,6 +82,7 @@ function showDashboard(email) {
   document.getElementById('auth-section').classList.add('hidden');
   document.getElementById('dashboard-section').classList.remove('hidden');
   document.getElementById('user-email').textContent = email;
+  loadFiles();
 }
 
 // --- Logout ---
@@ -98,6 +99,77 @@ document.getElementById('logout-btn').addEventListener('click', async () => {
   document.getElementById('auth-section').classList.remove('hidden');
   document.getElementById('otp-display').classList.add('hidden');
 });
+
+// --- Session Restore on Page Load ---
+(async () => {
+  try {
+    const res = await fetch(`${API}/auth/me`, { credentials: 'include' });
+    if (res.ok) {
+      const data = await res.json();
+      showDashboard(data.user.email);
+    }
+  } catch {
+    // No valid session, show login form
+  }
+})();
+
+// --- File List ---
+function formatFileSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+async function loadFiles() {
+  const container = document.getElementById('files-list');
+  container.innerHTML = '<p class="hint">Loading...</p>';
+
+  try {
+    const res = await fetch(`${API}/files`, { credentials: 'include' });
+    if (!res.ok) {
+      container.innerHTML = '<p class="hint">Failed to load files</p>';
+      return;
+    }
+    const { files } = await res.json();
+
+    if (files.length === 0) {
+      container.innerHTML = '<p class="files-empty">No files uploaded yet</p>';
+      return;
+    }
+
+    container.innerHTML = files.map(f => `
+      <div class="file-row">
+        <div class="file-info">
+          <div class="file-name" title="${f.original_name}">${f.original_name}</div>
+          <div class="file-meta">${formatFileSize(Number(f.size_bytes))} · ${new Date(f.created_at).toLocaleDateString()}</div>
+        </div>
+        <button class="btn-download" data-id="${f.id}">Download</button>
+      </div>
+    `).join('');
+
+    container.querySelectorAll('.btn-download').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        btn.textContent = '...';
+        try {
+          const res = await fetch(`${API}/files/${btn.dataset.id}/download`, { credentials: 'include' });
+          if (res.ok) {
+            const { url } = await res.json();
+            window.location.href = url;
+          }
+        } catch {
+          // ignore
+        }
+        btn.disabled = false;
+        btn.textContent = 'Download';
+      });
+    });
+  } catch {
+    container.innerHTML = '<p class="hint">Network error</p>';
+  }
+}
+
+document.getElementById('refresh-files-btn').addEventListener('click', loadFiles);
 
 // --- OTP Generation ---
 document.getElementById('otp-btn').addEventListener('click', async () => {
