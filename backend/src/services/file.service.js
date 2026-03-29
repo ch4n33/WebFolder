@@ -7,13 +7,18 @@ const fileService = {
     return fileRepository.findByUserId(userId);
   },
 
-  async getDownloadUrl(fileId, userId) {
+  async getDownloadStream(fileId, userId) {
     const file = await fileRepository.findByIdAndUserId(fileId, userId);
     if (!file) {
       throw new NotFoundError('File not found');
     }
-    const url = await storageRepository.getPresignedUrl(file.s3_key, file.original_name);
-    return { url, fileName: file.original_name };
+    const s3Response = await storageRepository.getObject(file.s3_key);
+    return {
+      stream: s3Response.Body,
+      fileName: file.original_name,
+      contentType: file.mime_type,
+      contentLength: file.size_bytes,
+    };
   },
 };
 

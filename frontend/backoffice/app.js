@@ -148,20 +148,8 @@ async function loadFiles() {
     `).join('');
 
     container.querySelectorAll('.btn-download').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        btn.disabled = true;
-        btn.textContent = '...';
-        try {
-          const res = await fetch(`${API}/files/${btn.dataset.id}/download`, { credentials: 'include' });
-          if (res.ok) {
-            const { url } = await res.json();
-            window.location.href = url;
-          }
-        } catch {
-          // ignore
-        }
-        btn.disabled = false;
-        btn.textContent = 'Download';
+      btn.addEventListener('click', () => {
+        window.location.href = `${API}/files/${btn.dataset.id}/download`;
       });
     });
   } catch {

@@ -1,5 +1,4 @@
 import { PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import s3Client from '../config/s3.js';
 import config from '../config/index.js';
 
@@ -16,13 +15,12 @@ const storageRepository = {
     return key;
   },
 
-  async getPresignedUrl(key, originalName) {
+  async getObject(key) {
     const command = new GetObjectCommand({
       Bucket: config.s3.bucket,
       Key: key,
-      ResponseContentDisposition: `attachment; filename="${encodeURIComponent(originalName)}"`,
     });
-    return getSignedUrl(s3Client, command, { expiresIn: 300 });
+    return s3Client.send(command);
   },
 };
 

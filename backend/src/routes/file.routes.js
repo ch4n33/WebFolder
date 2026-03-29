@@ -21,8 +21,14 @@ router.get('/', authenticate, async (req, res, next) => {
 
 router.get('/:id/download', authenticate, validateParams(fileIdSchema), async (req, res, next) => {
   try {
-    const result = await fileService.getDownloadUrl(req.validatedParams.id, req.user.id);
-    res.json(result);
+    const { stream, fileName, contentType, contentLength } =
+      await fileService.getDownloadStream(req.validatedParams.id, req.user.id);
+    res.set({
+      'Content-Type': contentType,
+      'Content-Disposition': `attachment; filename="${encodeURIComponent(fileName)}"`,
+      'Content-Length': contentLength,
+    });
+    stream.pipe(res);
   } catch (err) {
     next(err);
   }
