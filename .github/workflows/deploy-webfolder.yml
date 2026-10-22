@@ -63,13 +63,23 @@ jobs:
           mkdir -p ~/.kube
           echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
 
+      - name: Verify Kloud target
+        run: |
+          api_server="$(kubectl --context kloud config view --minify -o jsonpath='{.clusters[0].cluster.server}')"
+          node_ip="$(kubectl --context kloud get node ch4n33-server -o jsonpath='{.status.addresses[?(@.type=="InternalIP")].address}')"
+          if [ "$api_server" != "https://k3s.kloud.rche.moe:6443" ] || [ "$node_ip" != "192.168.50.18" ]; then
+            echo "Refusing deploy: unexpected Kloud API or node identity ($api_server, $node_ip)" >&2
+            exit 1
+          fi
+          echo "Verified Kloud target: $api_server; ch4n33-server $node_ip"
+
       - name: Deploy to Kloud
         run: |
-          kubectl get deployment webfolder -n kloud-apps 2>/dev/null || \
-            kubectl apply -f cluster/apps/webfolder/
+          kubectl --context kloud get deployment webfolder -n kloud-apps 2>/dev/null || \
+            kubectl --context kloud apply -f cluster/apps/webfolder/
 
-          kubectl set image deployment/webfolder \
+          kubectl --context kloud set image deployment/webfolder \
             webfolder=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
             -n kloud-apps
 
-          kubectl rollout status deployment/webfolder -n kloud-apps --timeout=120s
+          kubectl --context kloud rollout status deployment/webfolder -n kloud-apps --timeout=120s
